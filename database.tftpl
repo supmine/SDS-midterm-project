@@ -1,0 +1,19 @@
+#!/bin/bash
+sudo apt update -y
+sudo apt install -y mariadb-server
+sudo systectl start mariadb
+
+sudo mysql <<EOF
+CREATE DATABASE ${database_name};
+CREATE USER '${database_user}'@'%' IDENTIFIED BY '${database_pass}';
+GRANT ALL PRIVILEGES ON ${database_name}.* TO '${database_user}'@'%';
+FLUSH PRIVILEGES;
+EOF
+
+cat <<EOF >> /etc/mysql/my.cnf
+[mysqld]
+skip-networking=0
+skip-bind-address
+EOF
+
+sudo systemctl restart mariadb
